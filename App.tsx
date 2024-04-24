@@ -1,16 +1,16 @@
 import React from 'react';
-import {Text, View} from 'react-native';
+import {SafeAreaView,StatusBar} from 'react-native';
+import LoginScreen from './src/screens/Login';
+import { PaperProvider } from 'react-native-paper';
 
 const App = () => {
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}>
-      <Text>Hello, world!</Text>
-    </View>
+    <PaperProvider>
+      <SafeAreaView>
+        <StatusBar/>
+        <LoginScreen/>
+      </SafeAreaView>
+    </PaperProvider>
   );
 };
 export default App;
