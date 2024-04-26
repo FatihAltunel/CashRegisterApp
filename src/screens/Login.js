@@ -1,6 +1,6 @@
 import React from "react";
 import InputBox from "../components/InputBox";
-import {StyleSheet, View, Image } from "react-native";
+import {StyleSheet, View, Image} from "react-native";
 
 const LoginScreen = () => {
     return(
