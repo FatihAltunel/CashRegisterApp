@@ -1,8 +1,10 @@
 import React from 'react';
-import {StyleSheet,View,Text, Button, TextInput} from 'react-native';
+import {StyleSheet,View,Text, Button, TextInput, Vibration} from 'react-native';
 import IconUser from 'react-native-vector-icons/FontAwesome';
 import IconLock from 'react-native-vector-icons/FontAwesome';
 import { useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { users } from '../data/Users';
 
 //const iconUser = <IconUser name="user" size={30} color="#900" />;
 //const iconLock = <IconLock name="lock" size={30} color="#900" />;
@@ -14,20 +16,59 @@ const InputBox = () =>{
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState({});
 
+    setUserValue = async (value) => {
+        try {
+          await AsyncStorage.setItem('user1', JSON.stringify(users.user1))
+          await AsyncStorage.setItem('user2', JSON.stringify(users.user2))
+          await AsyncStorage.setItem('user3', JSON.stringify(users.user3))
+          await AsyncStorage.setItem('userTemp', JSON.stringify(value))
+          console.log("setUserValue'Daki userTemp:", JSON.stringify(value))
+
+        } catch(e) {}
+    }
+    const isEqual = (obj1, obj2) => {
+        return JSON.stringify(obj1) === JSON.stringify(obj2);
+    };
+   getUserValue = async () => {
+          const userTemp = JSON.parse(await AsyncStorage.getItem('userTemp'))
+          const user1 = JSON.parse(await AsyncStorage.getItem('user1'))
+          const user2 = JSON.parse(await AsyncStorage.getItem('user2'))
+          const user3 = JSON.parse(await AsyncStorage.getItem('user3'))
+          console.log("getUserValue'daki userTemp:", userTemp)
+          console.log("user1:", user1)
+          console.log("user2:", user2)
+          console.log("user3:", user3)
+
+        if (isEqual(userTemp, user1) || isEqual(userTemp, user2) || isEqual(userTemp, user3)) {
+            return true;
+        } else {
+            return false;
+        }
+    } 
     const ValidateForm = () => {
         const errors = {};
 
-        if(!usercode){errors.usercode="Usercode is Required";}
-        if(!password){errors.password="Password is Required";}
+        if(!usercode){errors.usercode="Usercode is Required"; Vibration.vibrate()}
+        if(!password){errors.password="Password is Required"; Vibration.vibrate()}
 
         setErrors(errors);
 
         return Object.keys(errors).length===0; //Fonksiyon, errors nesnesinin özelliklerini (yani hataları) alır, bunların sayısını kontrol eder. Eğer hiç hata yoksa (yani errors nesnesinin özellik sayısı 0 ise), true döndürülür. Aksi halde, yani hata varsa false döndürülür. Bu, fonksiyonun dışındaki koda formun geçerli olup olmadığını belirtmek için bir değer sağlar.
       };
 
-    const handleSubmit = () => {
+    const handleSubmit = async  () => {
         if(ValidateForm()){
             console.log("Submitted", usercode, password);
+            const tempUser = {
+                usercode: usercode,
+                password: password
+            }
+            await setUserValue(tempUser);
+            if(await getUserValue() == true){
+                console.log("başarıyla giriş yaptı")
+            }else{
+                console.log("there is no such a user as this, try again")
+            }
             setUsercode("");
             setPassword("");
             setErrors({});
